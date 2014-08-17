@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Compass</title>
+
+    <script type="text/javascript" charset="utf-8" src="phonegap.js"></script>
+    <script type="text/javascript" charset="utf-8">
+
+    var headingWatchID = null;
+
+    // Wait for Cordova to load
+    //
+    document.addEventListener("deviceready", onDeviceReady, false);
+
+    // Cordova is ready
+    //
+    function onDeviceReady() {
+        startWatch();
+    }
+
+    // Start watching the heading
+    //
+    function startWatch() {
+
+        // Update acceleration every 1 second
+        var options = { frequency: 1000 };
+
+	headingWatchID = navigator.compass.watchHeading(onHeadingSuccess, onHeadingError, options);
+    }
+
+    // Stop watching the acceleration
+    //
+    function stopWatch() {
+        if (headingWatchID) {
+            navigator.compass.clearWatch(headingWatchID);
+            headingWatchID = null;
+        }
+    }
+
+    // onSuccess: Get the current heading
+    //
+    function onHeadingSuccess(heading) {
+  	var element = document.getElementById('heading');
+        element.innerHTML = 'Heading: ' + heading.magneticHeading + ' degrees <br />';
+    }
+
+    // onError: Failed to get the heading
+    //
+    function onHeadingError(compassError) {
+        alert('Compass error: ' + compassError.code);
+    }
+    </script>
+
+    <script>
+    var surface;
+    var happy;
+    var angle = 0;
+
+    function drawCanvas() {
+        // Get our Canvas element
+        surface = document.getElementById("myCanvas");
+
+        if (surface.getContext) {
+            // If Canvas is supported, load the image
+            happy = new Image();
+            happy.onload = loadingComplete;
+            happy.src = "img/compass.png";
+        }
+
+        if (surface.getContext) {
+	    var ctx=surface.getContext("2d");
+	    ctx.beginPath();
+	    ctx.moveTo(0,0);
+	    ctx.lineTo(300,300);
+	    ctx.stroke();
+        }
+    }
+
+    function loadingComplete(e) {
+        // When the image has loaded begin the loop
+        setInterval(loop, 25);
+    }
+
+    function loop() {
+        // Each loop we rotate the image
+        // Grab the context
+        var surfaceContext = surface.getContext('2d');
+
+        // Clear the canvas to White
+        surfaceContext.fillStyle = "rgb(255,255,255)";
+        surfaceContext.fillRect(0, 0, surface.width, surface.height);
+
+        // Save the current context
+        surfaceContext.save();
+        // Translate to the center point of our image
+        surfaceContext.translate(happy.width * 0.5, happy.height * 0.5);
+        // Perform the rotation
+        surfaceContext.rotate(DegToRad(angle));
+        // Translate back to the top left of our image
+        surfaceContext.translate(-happy.width * 0.5, -happy.height * 0.5);
+        // Finally we draw the image
+        surfaceContext.drawImage(happy, 0, 0);
+        // And restore the context ready for the next loop
+        surfaceContext.restore();
+
+        surfaceContext.beginPath();
+        surfaceContext.moveTo(150,0);
+        surfaceContext.lineTo(150,300);
+        surfaceContext.lineWidth = 4;
+        surfaceContext.strokeStyle = '#ee0e00';
+        surfaceContext.stroke();
+        // Increment our rotation angle
+        angle++;
+    }
+
+    function DegToRad(d) {
+    // Converts degrees to radians
+        return d * 0.0174532925199432957;
+    }  
+    </script>
+</head>
+
+<body onload="drawCanvas();">
+    <div id="heading">Waiting for heading...</div>
+    <button onclick="startWatch();">Start Watching</button>
+    <button onclick="stopWatch();">Stop Watching</button>
+    <div>
+        <canvas id="myCanvas" width="300" height="300">
+            <p>Your browser doesn't support canvas.</p>
+        </canvas>
+    </div>
+</body>
+</html>
+
