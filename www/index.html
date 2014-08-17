@@ -85,7 +85,7 @@
         var surfaceContext = surface.getContext('2d');
 
         // Clear the canvas to White
-        surfaceContext.fillStyle = "rgb(255,255,255)";
+        surfaceContext.fillStyle = "rgb(0,128,128)";
         surfaceContext.fillRect(0, 0, surface.width, surface.height);
 
         // Save the current context
@@ -93,7 +93,7 @@
         // Translate to the center point of our image
         surfaceContext.translate(compass_img.width * 0.5, compass_img.height * 0.5);
         // Perform the rotation
-        surfaceContext.rotate(DegToRad(angle));
+        surfaceContext.rotate(DegToRad(360-angle));
         // Translate back to the top left of our image
         surfaceContext.translate(-compass_img.width * 0.5, -compass_img.height * 0.5);
         // Finally we draw the image
